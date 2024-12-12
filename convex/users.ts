@@ -42,6 +42,19 @@ export const getUser = query({
   },
 });
 
+export const getUserById = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_user_id")
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .first();
+
+    return user;
+  },
+});
+
 export const upgradeToPro = mutation({
   args: {
     email: v.string(),

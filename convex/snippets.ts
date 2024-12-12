@@ -1,11 +1,27 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+
+type Difficulty = "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
 
 export const createSnippet = mutation({
   args: {
     title: v.string(),
     language: v.string(),
     code: v.string(),
+    description: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    difficulty: v.optional(
+      v.union(
+        v.literal("BEGINNER"),
+        v.literal("INTERMEDIATE"),
+        v.literal("ADVANCED"),
+        v.literal("EXPERT")
+      )
+    ),
+    complexity: v.optional(v.float64()),
+    version: v.optional(v.string()),
+    downloads: v.optional(v.float64()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -25,6 +41,14 @@ export const createSnippet = mutation({
       title: args.title,
       language: args.language,
       code: args.code,
+      description: args.description ?? "",
+      tags: args.tags ?? [],
+      difficulty: args.difficulty ?? "BEGINNER" as const,
+      complexity: args.complexity ?? 1.0,
+      version: args.version ?? "1.0.0",
+      downloads: args.downloads ?? 0.0,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     });
 
     return snippetId;
@@ -121,6 +145,8 @@ export const addComment = mutation({
       userId: identity.subject,
       userName: user.name,
       content: args.content,
+      createdAt: Date.now(),
+      rating: 0.0
     });
   },
 });

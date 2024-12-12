@@ -26,14 +26,14 @@ export default defineSchema({
     language: v.string(),
     code: v.string(),
     userName: v.string(), // store user's name for easy access
-    description: v.string(),
-    tags: v.array(v.string()),
-    difficulty: v.union(v.literal("BEGINNER"), v.literal("INTERMEDIATE"), v.literal("ADVANCED"), v.literal("EXPERT")),
-    complexity: v.number(), // 1-5 scale
-    version: v.string(),
-    downloads: v.number(),
-    createdAt: v.number(), // timestamp
-    updatedAt: v.number(), // timestamp
+    description: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    difficulty: v.optional(v.union(v.literal("BEGINNER"), v.literal("INTERMEDIATE"), v.literal("ADVANCED"), v.literal("EXPERT"))),
+    complexity: v.optional(v.float64()), // 1-5 scale
+    version: v.optional(v.string()),
+    downloads: v.optional(v.float64()),
+    createdAt: v.optional(v.float64()), // timestamp
+    updatedAt: v.optional(v.float64()), // timestamp
   }).index("by_user_id", ["userId"])
     .index("by_language", ["language"])
     .index("by_difficulty", ["difficulty"])
@@ -73,4 +73,30 @@ export default defineSchema({
     .index("by_user_id", ["userId"])
     .index("by_snippet_id", ["snippetId"])
     .index("by_user_and_snippet", ["userId", "snippetId"]),
+
+  marketplaceTemplates: defineTable({
+    userId: v.string(),
+    title: v.string(),
+    description: v.string(),
+    code: v.string(),
+    language: v.string(),
+    framework: v.string(),
+    previewImage: v.string(),
+    downloads: v.number(),
+    userName: v.string(),
+    difficulty: v.union(v.literal("BEGINNER"), v.literal("INTERMEDIATE"), v.literal("ADVANCED"), v.literal("EXPERT")),
+    complexity: v.float64(),
+    tags: v.array(v.string()),
+    version: v.string(),
+    createdAt: v.float64(),
+    updatedAt: v.float64(),
+    isPro: v.optional(v.boolean()),
+    price: v.optional(v.float64()), // Temporary field for migration
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_language", ["language"])
+    .index("by_framework", ["framework"])
+    .index("by_difficulty", ["difficulty"])
+    .index("by_downloads", ["downloads"]),
+
 });
