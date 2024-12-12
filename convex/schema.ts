@@ -26,14 +26,36 @@ export default defineSchema({
     language: v.string(),
     code: v.string(),
     userName: v.string(), // store user's name for easy access
-  }).index("by_user_id", ["userId"]),
+    description: v.string(),
+    tags: v.array(v.string()),
+    difficulty: v.union(v.literal("BEGINNER"), v.literal("INTERMEDIATE"), v.literal("ADVANCED"), v.literal("EXPERT")),
+    complexity: v.number(), // 1-5 scale
+    version: v.string(),
+    downloads: v.number(),
+    createdAt: v.number(), // timestamp
+    updatedAt: v.number(), // timestamp
+  }).index("by_user_id", ["userId"])
+    .index("by_language", ["language"])
+    .index("by_difficulty", ["difficulty"])
+    .index("by_downloads", ["downloads"]),
+
+  snippetVersions: defineTable({
+    snippetId: v.id("snippets"),
+    version: v.string(),
+    code: v.string(),
+    changelog: v.string(),
+    createdAt: v.number(),
+  }).index("by_snippet_id", ["snippetId"]),
 
   snippetComments: defineTable({
     snippetId: v.id("snippets"),
     userId: v.string(),
     userName: v.string(),
     content: v.string(), // This will store HTML content
-  }).index("by_snippet_id", ["snippetId"]),
+    rating: v.number(), // 1-5 scale
+    createdAt: v.number(),
+  }).index("by_snippet_id", ["snippetId"])
+    .index("by_user_id", ["userId"]),
 
   stars: defineTable({
     userId: v.string(),
@@ -42,4 +64,13 @@ export default defineSchema({
     .index("by_user_id", ["userId"])
     .index("by_snippet_id", ["snippetId"])
     .index("by_user_id_and_snippet_id", ["userId", "snippetId"]),
+
+  favorites: defineTable({
+    userId: v.string(),
+    snippetId: v.id("snippets"),
+    createdAt: v.number(),
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_snippet_id", ["snippetId"])
+    .index("by_user_and_snippet", ["userId", "snippetId"]),
 });

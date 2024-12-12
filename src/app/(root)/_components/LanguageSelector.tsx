@@ -13,7 +13,9 @@ function LanguageSelector({ hasAccess }: { hasAccess: boolean }) {
 
   const { language, setLanguage } = useCodeEditorStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const currentLanguageObj = LANGUAGE_CONFIG[language];
+  const currentLanguageObj = LANGUAGE_CONFIG[language] || LANGUAGE_CONFIG['javascript'];
+  console.log('Language state:', language);
+  console.log('Current language:', language, 'Language object:', currentLanguageObj);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -100,11 +102,9 @@ function LanguageSelector({ hasAccess }: { hasAccess: boolean }) {
                     className="relative group px-2"
                   >
                     <button
-                      className={`
-                      relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                      className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                       ${language === lang.id ? "bg-blue-500/10 text-blue-400" : "text-gray-300"}
-                      ${isLocked ? "opacity-50" : "hover:bg-[#262637]"}
-                    `}
+                      ${isLocked ? "opacity-50" : "hover:bg-[#262637]"}`}
                       onClick={() => handleLanguageSelect(lang.id)}
                       disabled={isLocked}
                     >
@@ -115,10 +115,8 @@ function LanguageSelector({ hasAccess }: { hasAccess: boolean }) {
                       />
 
                       <div
-                        className={`
-                         relative size-8 rounded-lg p-1.5 group-hover:scale-110 transition-transform
-                         ${language === lang.id ? "bg-blue-500/10" : "bg-gray-800/50"}
-                       `}
+                        className={`relative size-8 rounded-lg p-1.5 group-hover:scale-110 transition-transform
+                         ${language === lang.id ? "bg-blue-500/10" : "bg-gray-800/50"}`}
                       >
                         <div
                           className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-lg 

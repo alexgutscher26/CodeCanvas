@@ -1,19 +1,19 @@
 import { Monaco } from "@monaco-editor/react";
 import { Theme } from "../../../types";
 
-type LanguageConfig = Record<
-  string,
-  {
-    id: string;
-    label: string;
-    logoPath: string;
-    pistonRuntime: { language: string; version: string };
-    monacoLanguage: string;
-    defaultCode: string;
-  }
->;
+export interface LanguageConfig {
+  id: string;
+  label: string;
+  logoPath: string;
+  pistonRuntime: {
+    language: string;
+    version: string;
+  };
+  monacoLanguage: string;
+  defaultCode: string;
+}
 
-export const LANGUAGE_CONFIG: LanguageConfig = {
+export const LANGUAGE_CONFIG: Record<string, LanguageConfig> = {
   javascript: {
     id: "javascript",
     label: "JavaScript",
@@ -228,7 +228,7 @@ int main() {
     
     // Print original numbers
     std::cout << "Original numbers: ";
-    for (int n : numbers) std::cout << n << " ";
+    for(int n : numbers) std::cout << n << " ";
     std::cout << std::endl;
     
     // Calculate squares
@@ -238,14 +238,17 @@ int main() {
                   [](int n) { return n * n; });
     
     std::cout << "Squared numbers: ";
-    for (int n : squares) std::cout << n << " ";
+    for(int n : squares) std::cout << n << " ";
     std::cout << std::endl;
     
     // Filter even numbers
+    std::vector<int> evenNumbers;
+    std::copy_if(numbers.begin(), numbers.end(),
+                 std::back_inserter(evenNumbers),
+                 [](int n) { return n % 2 == 0; });
+    
     std::cout << "Even numbers: ";
-    for (int n : numbers) {
-        if (n % 2 == 0) std::cout << n << " ";
-    }
+    for(int n : evenNumbers) std::cout << n << " ";
     std::cout << std::endl;
     
     // Calculate sum
@@ -263,6 +266,7 @@ int main() {
     monacoLanguage: "csharp",
     defaultCode: `using System;
 using System.Linq;
+using System.Collections.Generic;
 
 class Program {
     static void Main() {
@@ -290,7 +294,7 @@ class Program {
     id: "ruby",
     label: "Ruby",
     logoPath: "/ruby.png",
-    pistonRuntime: { language: "ruby", version: "3.0.1" },
+    pistonRuntime: { language: "ruby", version: "3.0.0" },
     monacoLanguage: "ruby",
     defaultCode: `# Create array
 numbers = [1, 2, 3, 4, 5]
@@ -310,126 +314,171 @@ puts "Even numbers: #{even_numbers.join(' ')}"
 sum = numbers.sum
 puts "Sum of numbers: #{sum}"`,
   },
+  php: {
+    id: "php",
+    label: "PHP",
+    logoPath: "/php.png",
+    pistonRuntime: { language: "php", version: "8.2.3" },
+    monacoLanguage: "php",
+    defaultCode: `<?php
+// Create array
+$numbers = [1, 2, 3, 4, 5];
+
+// Print original numbers
+echo "Original numbers: " . implode(", ", $numbers) . "\n";
+
+// Calculate squares
+$squares = array_map(function($n) {
+    return $n * $n;
+}, $numbers);
+echo "Squared numbers: " . implode(", ", $squares) . "\n";
+
+// Filter even numbers
+$evenNumbers = array_filter($numbers, function($n) {
+    return $n % 2 === 0;
+});
+echo "Even numbers: " . implode(", ", $evenNumbers) . "\n";
+
+// Calculate sum
+$sum = array_sum($numbers);
+echo "Sum of numbers: " . $sum . "\n";`,
+  },
   swift: {
     id: "swift",
     label: "Swift",
     logoPath: "/swift.png",
-    pistonRuntime: { language: "swift", version: "5.3.3" },
+    pistonRuntime: { language: "swift", version: "5.5" },
     monacoLanguage: "swift",
     defaultCode: `// Create array
 let numbers = [1, 2, 3, 4, 5]
 
 // Print original numbers
-print("Original numbers: \\(numbers)")
+print("Original numbers: \(numbers)")
 
 // Calculate squares
 let squares = numbers.map { $0 * $0 }
-print("Squared numbers: \\(squares)")
+print("Squared numbers: \(squares)")
 
 // Filter even numbers
 let evenNumbers = numbers.filter { $0 % 2 == 0 }
-print("Even numbers: \\(evenNumbers)")
+print("Even numbers: \(evenNumbers)")
 
 // Calculate sum
 let sum = numbers.reduce(0, +)
-print("Sum of numbers: \\(sum)")`,
+print("Sum of numbers: \(sum)")`,
+  },
+  kotlin: {
+    id: "kotlin",
+    label: "Kotlin",
+    logoPath: "/kotlin.png",
+    pistonRuntime: { language: "kotlin", version: "1.8.20" },
+    monacoLanguage: "kotlin",
+    defaultCode: `fun main() {
+    // Create list
+    val numbers = listOf(1, 2, 3, 4, 5)
+    
+    // Print original numbers
+    println("Original numbers: $numbers")
+    
+    // Calculate squares
+    val squares = numbers.map { it * it }
+    println("Squared numbers: $squares")
+    
+    // Filter even numbers
+    val evenNumbers = numbers.filter { it % 2 == 0 }
+    println("Even numbers: $evenNumbers")
+    
+    // Calculate sum
+    val sum = numbers.sum()
+    println("Sum of numbers: $sum")
+}`,
   },
 };
 
+// Update versions on app initialization
+import { updateLanguageVersions } from '../_utils/updateVersions';
+updateLanguageVersions().catch(console.error);
+
 export const THEMES: Theme[] = [
-  { id: "vs-dark", label: "VS Dark", color: "#1e1e1e" },
-  { id: "vs-light", label: "VS Light", color: "#ffffff" },
-  { id: "github-dark", label: "GitHub Dark", color: "#0d1117" },
-  { id: "monokai", label: "Monokai", color: "#272822" },
-  { id: "solarized-dark", label: "Solarized Dark", color: "#002b36" },
+  { id: 'vs-dark', label: 'VS Dark', color: '#1E1E1E' },
+  { id: 'github-dark', label: 'GitHub Dark', color: '#24292E' },
+  { id: 'monokai', label: 'Monokai', color: '#272822' },
+  { id: 'light', label: 'Light', color: '#FFFFFF' }
 ];
 
-export const THEME_DEFINITONS = {
-  "github-dark": {
-    base: "vs-dark",
+export const THEME_DEFINITIONS = {
+  'vs-dark': {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [],
+    colors: {}
+  },
+  'github-dark': {
+    base: 'vs-dark',
     inherit: true,
     rules: [
-      { token: "comment", foreground: "6e7681" },
-      { token: "string", foreground: "a5d6ff" },
-      { token: "keyword", foreground: "ff7b72" },
-      { token: "number", foreground: "79c0ff" },
-      { token: "type", foreground: "ffa657" },
-      { token: "class", foreground: "ffa657" },
-      { token: "function", foreground: "d2a8ff" },
-      { token: "variable", foreground: "ffa657" },
-      { token: "operator", foreground: "ff7b72" },
+      { token: 'comment', foreground: '6A737D' },
+      { token: 'keyword', foreground: 'F97583' },
+      { token: 'string', foreground: '9ECBFF' },
+      { token: 'number', foreground: 'B392F0' },
+      { token: 'type', foreground: '79B8FF' }
     ],
     colors: {
-      "editor.background": "#0d1117",
-      "editor.foreground": "#c9d1d9",
-      "editor.lineHighlightBackground": "#161b22",
-      "editorLineNumber.foreground": "#6e7681",
-      "editorIndentGuide.background": "#21262d",
-      "editor.selectionBackground": "#264f78",
-      "editor.inactiveSelectionBackground": "#264f7855",
-    },
+      'editor.background': '#24292E',
+      'editor.foreground': '#E1E4E8',
+      'editorLineNumber.foreground': '#6A737D',
+      'editor.selectionBackground': '#444D56',
+      'editor.inactiveSelectionBackground': '#373E47'
+    }
   },
-  monokai: {
-    base: "vs-dark",
+  'monokai': {
+    base: 'vs-dark',
     inherit: true,
     rules: [
-      { token: "comment", foreground: "75715E" },
-      { token: "string", foreground: "E6DB74" },
-      { token: "keyword", foreground: "F92672" },
-      { token: "number", foreground: "AE81FF" },
-      { token: "type", foreground: "66D9EF" },
-      { token: "class", foreground: "A6E22E" },
-      { token: "function", foreground: "A6E22E" },
-      { token: "variable", foreground: "F8F8F2" },
-      { token: "operator", foreground: "F92672" },
+      { token: 'comment', foreground: '88846F' },
+      { token: 'keyword', foreground: 'F92672' },
+      { token: 'string', foreground: 'E6DB74' },
+      { token: 'number', foreground: 'AE81FF' },
+      { token: 'type', foreground: '66D9EF' }
     ],
     colors: {
-      "editor.background": "#272822",
-      "editor.foreground": "#F8F8F2",
-      "editorLineNumber.foreground": "#75715E",
-      "editor.selectionBackground": "#49483E",
-      "editor.lineHighlightBackground": "#3E3D32",
-      "editorCursor.foreground": "#F8F8F2",
-      "editor.selectionHighlightBackground": "#49483E",
-    },
+      'editor.background': '#272822',
+      'editor.foreground': '#F8F8F2',
+      'editorLineNumber.foreground': '#90908A',
+      'editor.selectionBackground': '#49483E',
+      'editor.inactiveSelectionBackground': '#3E3D32'
+    }
   },
-  "solarized-dark": {
-    base: "vs-dark",
+  'light': {
+    base: 'vs',
     inherit: true,
     rules: [
-      { token: "comment", foreground: "586e75" },
-      { token: "string", foreground: "2aa198" },
-      { token: "keyword", foreground: "859900" },
-      { token: "number", foreground: "d33682" },
-      { token: "type", foreground: "b58900" },
-      { token: "class", foreground: "b58900" },
-      { token: "function", foreground: "268bd2" },
-      { token: "variable", foreground: "b58900" },
-      { token: "operator", foreground: "859900" },
+      { token: 'comment', foreground: '008000' },
+      { token: 'keyword', foreground: '0000FF' },
+      { token: 'string', foreground: 'A31515' },
+      { token: 'number', foreground: '098658' },
+      { token: 'type', foreground: '267F99' }
     ],
     colors: {
-      "editor.background": "#002b36",
-      "editor.foreground": "#839496",
-      "editorLineNumber.foreground": "#586e75",
-      "editor.selectionBackground": "#073642",
-      "editor.lineHighlightBackground": "#073642",
-      "editorCursor.foreground": "#839496",
-      "editor.selectionHighlightBackground": "#073642",
-    },
-  },
+      'editor.background': '#FFFFFF',
+      'editor.foreground': '#000000',
+      'editorLineNumber.foreground': '#237893',
+      'editor.selectionBackground': '#ADD6FF',
+      'editor.inactiveSelectionBackground': '#E5EBF1'
+    }
+  }
 };
 
 // Helper function to define themes in Monaco
 export const defineMonacoThemes = (monaco: Monaco) => {
-  Object.entries(THEME_DEFINITONS).forEach(([themeName, themeData]) => {
+  Object.entries(THEME_DEFINITIONS).forEach(([themeName, themeData]) => {
     monaco.editor.defineTheme(themeName, {
       base: themeData.base,
       inherit: themeData.inherit,
-      rules: themeData.rules.map((rule) => ({
-        ...rule,
-        foreground: rule.foreground,
-      })),
+      rules: themeData.rules,
       colors: themeData.colors,
     });
   });
 };
+
+export default LANGUAGE_CONFIG;
