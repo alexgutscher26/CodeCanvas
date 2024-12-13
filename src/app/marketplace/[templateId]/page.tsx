@@ -15,6 +15,7 @@ import { ProGate } from "@/components/ProGate";
 import { useState } from "react";
 import TemplateComments from "@/components/templates/TemplateComments";
 import TemplateRatings from "@/components/templates/TemplateRatings";
+import FavoriteButton from "@/components/ui/favorite-button";
 
 export default function TemplateDetailPage() {
   const { templateId } = useParams();
@@ -154,8 +155,11 @@ export default function TemplateDetailPage() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <div className="text-sm text-gray-400">
-                    {template.downloads.toLocaleString()} downloads
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-400">
+                      {template.downloads.toLocaleString()} downloads
+                    </div>
+                    <FavoriteButton templateId={template._id} />
                   </div>
                   {template.isPro ? (
                     <ProGate>

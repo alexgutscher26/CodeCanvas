@@ -119,7 +119,6 @@ Enhanced Editor Features:
 
 
 
-Version control for templates
 Favorites and bookmarking system
 Snippet difficulty and complexity tagging
 

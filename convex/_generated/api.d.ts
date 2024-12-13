@@ -20,6 +20,7 @@ import type * as lemonSqueezy from "../lemonSqueezy.js";
 import type * as marketplace from "../marketplace.js";
 import type * as migrations from "../migrations.js";
 import type * as snippets from "../snippets.js";
+import type * as templateFavorites from "../templateFavorites.js";
 import type * as templates from "../templates.js";
 import type * as users from "../users.js";
 
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   marketplace: typeof marketplace;
   migrations: typeof migrations;
   snippets: typeof snippets;
+  templateFavorites: typeof templateFavorites;
   templates: typeof templates;
   users: typeof users;
 }>;

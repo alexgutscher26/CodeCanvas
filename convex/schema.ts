@@ -125,4 +125,13 @@ export default defineSchema({
     .index("by_template_id", ["templateId"])
     .index("by_user_id", ["userId"])
     .index("by_parent_id", ["parentId"]),
+
+  templateFavorites: defineTable({
+    userId: v.string(),
+    templateId: v.id("marketplaceTemplates"),
+    createdAt: v.number(),
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_template_id", ["templateId"])
+    .index("by_user_and_template", ["userId", "templateId"]),
 });
