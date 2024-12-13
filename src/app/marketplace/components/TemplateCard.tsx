@@ -11,18 +11,22 @@ interface TemplateCardProps {
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
   // Get first 10 lines of code for preview
-  const previewCode = template.code.split('\n').slice(0, 10).join('\n');
-  
+  const previewCode = template.code.split("\n").slice(0, 10).join("\n");
+
   return (
     <Link href={`/marketplace/${template._id}`}>
-      <motion.div 
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
         className="group relative bg-[#121218] border border-[#ffffff0a] rounded-2xl overflow-hidden hover:border-[#313244] transition-all duration-200"
-        whileHover={{ y: -4 }}
       >
         {/* Header */}
         <div className="p-6 border-b border-[#ffffff0a]">
           <div className="flex items-start justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white line-clamp-2">{template.title}</h3>
+            <h3 className="text-lg font-semibold text-white line-clamp-2">
+              {template.title}
+            </h3>
             <div className="flex items-center gap-2">
               <span className="px-2 py-1 bg-[#1e1e2e] text-gray-300 rounded-lg text-xs font-medium">
                 PRO
@@ -36,7 +40,11 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
 
           <div className="flex flex-wrap gap-2 mb-4">
             <div className="flex items-center gap-1.5 px-2 py-1 bg-[#1e1e2e] rounded-lg text-xs text-gray-400">
-              <img src={`/${template.language}.png`} alt={template.language} className="w-3.5 h-3.5 object-contain" />
+              <img
+                src={`/${template.language}.png`}
+                alt={template.language}
+                className="w-3.5 h-3.5 object-contain"
+              />
               <span>{template.language}</span>
             </div>
             <span className="px-2 py-1 bg-[#1e1e2e] text-gray-400 rounded-lg text-xs">
@@ -68,14 +76,21 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
           <div className="h-[200px] overflow-hidden">
             <Editor
               height="200px"
-              language={LANGUAGE_CONFIG[template.language]?.monacoLanguage || "plaintext"}
+              language={
+                LANGUAGE_CONFIG[template.language]?.monacoLanguage ||
+                "plaintext"
+              }
               value={previewCode}
               theme="vs-dark"
               options={{
                 readOnly: true,
                 minimap: { enabled: false },
                 scrollBeyondLastLine: false,
-                lineNumbers: "off",
+                lineNumbers: "on",
+                automaticLayout: true,
+                wordWrap: "on",
+                wordWrapColumn: 120,
+                wrappingIndent: "indent",
                 glyphMargin: false,
                 folding: false,
                 lineDecorationsWidth: 0,

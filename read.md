@@ -146,9 +146,7 @@ Snippet difficulty and complexity tagging
 Technical Features
 
 
-One-click copy functionality
-Syntax highlighting
-Preview and live demo options
+
 Compatibility indicators
 Dependency checker
 

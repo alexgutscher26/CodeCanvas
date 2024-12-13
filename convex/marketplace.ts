@@ -79,27 +79,20 @@ export const get = query({
 export const purchase = mutation({
   args: {
     templateId: v.id("marketplaceTemplates"),
-    transactionId: v.string(),
+    userId: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const userId = identity.subject;
-
-    // Increment downloads count
     const template = await ctx.db.get(args.templateId);
     if (!template) {
       throw new Error("Template not found");
     }
 
+    // Increment the downloads count
     await ctx.db.patch(args.templateId, {
       downloads: (template.downloads || 0) + 1,
     });
 
-    return template;
+    return { success: true };
   },
 });
 
@@ -130,9 +123,9 @@ export const create = mutation({
       complexity: 1.0,
       tags: [],
       version: "1.0.0",
-      previewImage: "", // We'll need to add image upload functionality later
       createdAt: Date.now(),
       updatedAt: Date.now(),
+      previewImage: ""
     });
 
     return templateId;
@@ -177,8 +170,7 @@ export default function RootLayout({
         language: "typescript",
         framework: "next.js",
         previewImage: "/templates/auth.jpg",
-        price: 29.99,
-        downloads: 245,
+        downloads: 0,
         userName: "CodeCraft Team",
         difficulty: "BEGINNER" as const,
         complexity: 2.0,
@@ -262,8 +254,7 @@ export default function ProfileForm() {
         language: "typescript",
         framework: "next.js",
         previewImage: "/templates/server-actions.jpg",
-        price: 44.99,
-        downloads: 178,
+        downloads: 0,
         userName: "CodeCraft Team",
         difficulty: "ADVANCED" as const,
         complexity: 4.5,
@@ -378,8 +369,7 @@ export function TodoList() {
         language: "typescript",
         framework: "react",
         previewImage: "/templates/react-query.jpg",
-        price: 39.99,
-        downloads: 234,
+        downloads: 0,
         userName: "CodeCraft Team",
         difficulty: "ADVANCED" as const,
         complexity: 4.2,
@@ -522,10 +512,9 @@ export function UserForm() {
   )
 }`,
         language: "typescript",
-        framework: "next.js",
         previewImage: "/templates/server-actions.jpg",
-        price: 44.99,
-        downloads: 178,
+        framework: "next.js",
+        downloads: 0,
         userName: "CodeCraft Team",
         difficulty: "ADVANCED" as const,
         complexity: 4.5,

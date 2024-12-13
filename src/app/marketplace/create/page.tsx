@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
@@ -8,12 +8,8 @@ import { api } from "../../../../convex/_generated/api";
 import { toast } from "sonner";
 import { Editor } from "@monaco-editor/react";
 import { Code, FileCode, Share, Sparkles } from "lucide-react";
-import { animate, motion, px } from "framer-motion";
+import { motion } from "framer-motion";
 import NavigationHeader from "@/components/NavigationHeader";
-import { all } from "axios";
-import { type } from "os";
-import React from "react";
-import { text } from "stream/consumers";
 
 type TemplateFormData = {
   name: string;
@@ -38,7 +34,7 @@ export default function CreateTemplatePage() {
     code: "",
   });
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSignedIn) {
       toast.error("Please sign in to create a template");
@@ -51,7 +47,6 @@ export default function CreateTemplatePage() {
         userId: user.id,
         userName: user.fullName || user.username || "Anonymous",
         isPro: false,
-        price: 0
       });
 
       toast.success("Template created successfully!");
@@ -60,7 +55,7 @@ export default function CreateTemplatePage() {
       toast.error("Failed to create template");
       console.error(error);
     }
-  }, [createTemplate, formData, isSignedIn, router, user]);
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
@@ -72,8 +67,7 @@ export default function CreateTemplatePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r
-             from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
           >
             <FileCode className="w-4 h-4" />
             Create New Template
@@ -102,13 +96,13 @@ export default function CreateTemplatePage() {
             <div className="space-y-4">
               {/* Title Input */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                 <input
                   type="text"
                   placeholder="Template Name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                  className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
                     border border-[#313244] hover:border-[#414155] transition-all duration-200
                     placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   required
@@ -117,12 +111,12 @@ export default function CreateTemplatePage() {
 
               {/* Description Input */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                 <textarea
                   placeholder="Description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                  className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
                     border border-[#313244] hover:border-[#414155] transition-all duration-200
                     placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50
                     min-h-[100px] resize-y"
@@ -133,11 +127,11 @@ export default function CreateTemplatePage() {
               {/* Language and Framework Selects */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                   <select
                     value={formData.language}
                     onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                    className="w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                    className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
                       border border-[#313244] hover:border-[#414155] transition-all duration-200
                       focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   >
@@ -148,11 +142,11 @@ export default function CreateTemplatePage() {
                 </div>
 
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                   <select
                     value={formData.framework}
                     onChange={(e) => setFormData({ ...formData, framework: e.target.value })}
-                    className="w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                    className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
                       border border-[#313244] hover:border-[#414155] transition-all duration-200
                       focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   >
@@ -165,11 +159,11 @@ export default function CreateTemplatePage() {
 
               {/* Difficulty Select */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                 <select
                   value={formData.difficulty}
                   onChange={(e) => setFormData({ ...formData, difficulty: e.target.value as TemplateFormData["difficulty"] })}
-                  className="w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                  className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
                     border border-[#313244] hover:border-[#414155] transition-all duration-200
                     focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 >

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { mutation } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
 
 export const migrateSnippets = mutation({
   handler: async (ctx) => {
