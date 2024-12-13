@@ -1,9 +1,12 @@
 "use client";
 import LoginButton from "@/components/LoginButton";
-import { SignedOut, UserButton } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 import { User } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 function HeaderProfileBtn() {
+  const { isSignedIn } = useUser();
+
   return (
     <>
       <UserButton>
@@ -16,9 +19,8 @@ function HeaderProfileBtn() {
         </UserButton.MenuItems>
       </UserButton>
 
-      <SignedOut>
-        <LoginButton />
-      </SignedOut>
+      {/* Conditional rendering based on user authentication state */}
+      {!isSignedIn && <LoginButton />}
     </>
   );
 }

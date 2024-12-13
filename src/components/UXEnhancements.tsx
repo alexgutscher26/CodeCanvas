@@ -1,84 +1,110 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 "use client";
 
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback } from "react";
+import { toast } from "sonner";
+import { useHotkeys } from "react-hotkeys-hook";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import debounce from "lodash/debounce";
 
 export function useUXEnhancements() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [lastError, setLastError] = useState<Date | null>(null);
+
+  // Debounced toast functions
+  const debouncedSuccessToast = useCallback(
+    debounce((message: string) => {
+      toast.success(message);
+    }, 5000),
+    []
+  );
+
+  const debouncedErrorToast = useCallback(
+    debounce((message: string) => {
+      const now = new Date();
+      if (!lastError || now.getTime() - lastError.getTime() > 5000) {
+        toast.error(message);
+        setLastError(now);
+      }
+    }, 1000),
+    [lastError]
+  );
 
   // Keyboard shortcuts
-  useHotkeys('ctrl+k', (e) => {
+  useHotkeys("ctrl+k", (e) => {
     e.preventDefault();
     document.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
   });
 
-  useHotkeys('esc', () => {
-    document.activeElement instanceof HTMLElement && document.activeElement.blur();
+  useHotkeys("esc", () => {
+    document.activeElement instanceof HTMLElement &&
+      document.activeElement.blur();
   });
 
-  useHotkeys('ctrl+/', () => {
-    router.push('/snippets');
+  useHotkeys("ctrl+/", () => {
+    router.push("/snippets");
   });
 
-  useHotkeys('ctrl+h', () => {
-    router.push('/');
+  useHotkeys("ctrl+h", () => {
+    router.push("/");
   });
 
-  // Error boundary
+  // Error boundary with debounced notifications
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
-      console.error('Runtime error:', event.error);
-      toast.error('Something went wrong. Please try again.');
+      console.error("Runtime error:", event.error);
+      debouncedErrorToast("Something went wrong. Please try again.");
     };
 
-    window.addEventListener('error', handleError);
-    return () => window.removeEventListener('error', handleError);
-  }, []);
+    window.addEventListener("error", handleError);
+    return () => window.removeEventListener("error", handleError);
+  }, [debouncedErrorToast]);
 
-  // Network status
+  // Network status with debounced notifications
   useEffect(() => {
-    const handleOnline = () => toast.success('Back online!');
-    const handleOffline = () => toast.error('You are offline. Some features may be limited.');
+    const handleOnline = () => debouncedSuccessToast("Back online!");
+    const handleOffline = () =>
+      debouncedErrorToast("You are offline. Some features may be limited.");
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
-  }, []);
+  }, [debouncedSuccessToast, debouncedErrorToast]);
 
   // Page load progress
   useEffect(() => {
     const handleStart = () => {
-      // Show loading indicator
-      if (typeof document !== 'undefined') {
-        document.body.style.cursor = 'wait';
-      }
+      setIsLoading(true);
     };
 
     const handleComplete = () => {
-      // Hide loading indicator
-      if (typeof document !== 'undefined') {
-        document.body.style.cursor = 'default';
-      }
+      setIsLoading(false);
+      debouncedSuccessToast("Code saved");
     };
 
-    router.events?.on('routeChangeStart', handleStart);
-    router.events?.on('routeChangeComplete', handleComplete);
-    router.events?.on('routeChangeError', handleComplete);
+    const handleError = () => {
+      setIsLoading(false);
+    };
+
+    router.events?.on("routeChangeStart", handleStart);
+    router.events?.on("routeChangeComplete", handleComplete);
+    router.events?.on("routeChangeError", handleError);
 
     return () => {
-      router.events?.off('routeChangeStart', handleStart);
-      router.events?.off('routeChangeComplete', handleComplete);
-      router.events?.off('routeChangeError', handleComplete);
+      setIsLoading(false);
+      router.events?.off("routeChangeStart", handleStart);
+      router.events?.off("routeChangeComplete", handleComplete);
+      router.events?.off("routeChangeError", handleError);
     };
-  }, [router]);
+  }, [debouncedSuccessToast, router]);
 
   return null;
 }
@@ -110,11 +136,11 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function CustomTooltip({ 
-  children, 
+export function CustomTooltip({
+  children,
   content,
-  shortcut
-}: { 
+  shortcut,
+}: {
   children: React.ReactNode;
   content: string;
   shortcut?: string;
@@ -122,7 +148,7 @@ export function CustomTooltip({
   const [isVisible, setIsVisible] = useState(false);
 
   return (
-    <div 
+    <div
       className="relative inline-block"
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
@@ -147,8 +173,10 @@ export function CustomTooltip({
                 </span>
               )}
             </div>
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 
-            size-2 bg-[#1e1e2e] border-r border-b border-[#313244]" />
+            <div
+              className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 
+            size-2 bg-[#1e1e2e] border-r border-b border-[#313244]"
+            />
           </motion.div>
         )}
       </AnimatePresence>

@@ -2,6 +2,8 @@ import { Monaco } from "@monaco-editor/react";
 import { Theme } from "../../../types";
 
 export interface LanguageConfig {
+  [x: string]: any;
+  extension: any;
   id: string;
   label: string;
   logoPath: string;

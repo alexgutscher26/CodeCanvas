@@ -7,7 +7,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { toast } from "sonner";
 import { Editor } from "@monaco-editor/react";
-import { Code, FileCode, Share, Sparkles } from "lucide-react";
+import { Code, FileCode, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import NavigationHeader from "@/components/NavigationHeader";
 

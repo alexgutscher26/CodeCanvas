@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Blocks, Code2, Sparkles, Menu, X } from "lucide-react";
-import { SignedIn, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import ThemeSelector from "./ThemeSelector";
 import LanguageSelector from "./LanguageSelector";
 import RunButton from "./RunButton";
@@ -11,6 +11,16 @@ import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { cn } from "@/lib/utils";
+
+function SignedIn({ children }: { children: React.ReactNode }) {
+  const { user } = useUser();
+
+  if (!user) {
+    return null; // or a loading spinner, depending on your UX preference
+  }
+
+  return <>{children}</>; // Return the children if the user is signed in
+}
 
 function Header() {
   const { user } = useUser();
