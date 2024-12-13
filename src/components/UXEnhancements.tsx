@@ -113,24 +113,31 @@ export function useUXEnhancements(config: UXEnhancementsConfig = defaultConfig) 
 
   // Page load progress
   useEffect(() => {
-    const handleStart = () => setIsLoading(true);
-    const handleComplete = () => {
+    setIsLoading(true);
+    
+    const timeout = setTimeout(() => {
       setIsLoading(false);
-      debouncedToast("Navigation complete", "success");
-    };
-    const handleError = () => setIsLoading(false);
-
-    router.events?.on("routeChangeStart", handleStart);
-    router.events?.on("routeChangeComplete", handleComplete);
-    router.events?.on("routeChangeError", handleError);
+    }, 300);
 
     return () => {
+      clearTimeout(timeout);
       setIsLoading(false);
-      router.events?.off("routeChangeStart", handleStart);
-      router.events?.off("routeChangeComplete", handleComplete);
-      router.events?.off("routeChangeError", handleError);
     };
-  }, [debouncedToast, router]);
+  }, [pathname]);
+
+  // Navigation start indicator
+  useEffect(() => {
+    const handleStart = () => setIsLoading(true);
+    const handleStop = () => setIsLoading(false);
+
+    window.addEventListener('beforeunload', handleStart);
+    window.addEventListener('load', handleStop);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleStart);
+      window.removeEventListener('load', handleStop);
+    };
+  }, []);
 
   return {
     isLoading,
