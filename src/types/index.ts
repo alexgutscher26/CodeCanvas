@@ -1,6 +1,5 @@
 import * as monaco from 'monaco-editor';
 import { Id } from "../../convex/_generated/dataModel";
-import { StateCreator } from 'zustand';
 
 export interface Theme {
   id: string;
