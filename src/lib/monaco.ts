@@ -20,7 +20,7 @@ class MonacoEditorWrapper {
     return editor.getModelMarkers(params);
   }
 
-  static async onDidChangeMarkers(callback: (uris: Uri[]) => void) {
+  static async onDidChangeMarkers(callback: (uris: readonly Uri[]) => void) {
     const editor = await this.getEditor();
     if (!editor) return { dispose: () => {} };
     return editor.onDidChangeMarkers(callback);
