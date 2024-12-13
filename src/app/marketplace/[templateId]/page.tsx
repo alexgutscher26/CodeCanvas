@@ -17,7 +17,7 @@ import { useState } from "react";
 export default function TemplateDetailPage() {
   const { templateId } = useParams();
   const { isSignedIn, user } = useUser();
-   const [isCopied, setIsCopied] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const template = useQuery(api.marketplace.get, {
     id: templateId as string,
@@ -78,10 +78,42 @@ export default function TemplateDetailPage() {
         userId: user.id,
       });
 
+      const blob = new Blob([template.code], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${template.title.toLowerCase().replace(/\s+/g, '-')}.${getFileExtension(template.language)}`;
+      document.body.appendChild(link);
+      link.click();
+      
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
       toast.success("Template downloaded successfully!");
     } catch (error) {
       toast.error("Failed to download template");
     }
+  };
+
+  const getFileExtension = (language: string): string => {
+    const extensions: Record<string, string> = {
+      typescript: 'ts',
+      javascript: 'js',
+      python: 'py',
+      java: 'java',
+      'c++': 'cpp',
+      'c#': 'cs',
+      ruby: 'rb',
+      go: 'go',
+      rust: 'rs',
+      php: 'php',
+      swift: 'swift',
+      kotlin: 'kt',
+      dart: 'dart',
+      // Add more languages as needed
+    };
+    return extensions[language.toLowerCase()] || 'txt';
   };
 
   return (
