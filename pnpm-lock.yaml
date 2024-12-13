@@ -20,6 +20,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.62.7
         version: 5.62.7(react@19.0.0-rc-66855b96-20241106)
+      '@tanstack/react-virtual':
+        specifier: ^3.11.1
+        version: 3.11.1(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       '@types/lodash':
         specifier: ^4.17.13
         version: 4.17.13
@@ -77,6 +80,9 @@ importers:
       react-dom:
         specifier: 19.0.0-rc-66855b96-20241106
         version: 19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106)
+      react-error-boundary:
+        specifier: ^4.1.2
+        version: 4.1.2(react@19.0.0-rc-66855b96-20241106)
       react-hook-form:
         specifier: ^7.54.0
         version: 7.54.0(react@19.0.0-rc-66855b96-20241106)
@@ -944,6 +950,15 @@ packages:
     resolution: {integrity: sha512-+xCtP4UAFDTlRTYyEjLx0sRtWyr5GIk7TZjZwBu4YaNahi3Rt2oMyRqfpfVrtwsqY2sayP4iXVCwmC+ZqqFmuw==}
     peerDependencies:
       react: ^18 || ^19
+
+  '@tanstack/react-virtual@3.11.1':
+    resolution: {integrity: sha512-orn2QNe5tF6SqjucHJ6cKTKcRDe3GG7bcYqPNn72Yejj7noECdzgAyRfGt2pGDPemhYim3d1HIR/dgruCnLfUA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tanstack/virtual-core@3.10.9':
+    resolution: {integrity: sha512-kBknKOKzmeR7lN+vSadaKWXaLS0SZZG+oqpQ/k80Q6g9REn6zRHS/ZYdrIzHnpHgy/eWs00SujveUN/GJT2qTw==}
 
   '@types/d3-array@3.2.1':
     resolution: {integrity: sha512-Y2Jn2idRrLzUfAKV2LyRImR+y4oa2AntrgID95SHJxuMUrkNXmanDSed71sRNZysveJVt1hLLemQZIady0FpEg==}
@@ -2385,6 +2400,11 @@ packages:
     peerDependencies:
       react: 19.0.0-rc-66855b96-20241106
 
+  react-error-boundary@4.1.2:
+    resolution: {integrity: sha512-GQDxZ5Jd+Aq/qUxbCm1UtzmL/s++V7zKgE8yMktJiCQXCCFZnMZh9ng+6/Ne6PjNSXH0L9CjeOEREfRnq6Duag==}
+    peerDependencies:
+      react: '>=16.13.1'
+
   react-hook-form@7.54.0:
     resolution: {integrity: sha512-PS05+UQy/IdSbJNojBypxAo9wllhHgGmyr8/dyGQcPoiMf3e7Dfb9PWYVRco55bLbxH9S+1yDDJeTdlYCSxO3A==}
     engines: {node: '>=18.0.0'}
@@ -3586,6 +3606,14 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.62.7
       react: 19.0.0-rc-66855b96-20241106
+
+  '@tanstack/react-virtual@3.11.1(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)':
+    dependencies:
+      '@tanstack/virtual-core': 3.10.9
+      react: 19.0.0-rc-66855b96-20241106
+      react-dom: 19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106)
+
+  '@tanstack/virtual-core@3.10.9': {}
 
   '@types/d3-array@3.2.1': {}
 
@@ -5182,6 +5210,11 @@ snapshots:
     dependencies:
       react: 19.0.0-rc-66855b96-20241106
       scheduler: 0.25.0-rc-66855b96-20241106
+
+  react-error-boundary@4.1.2(react@19.0.0-rc-66855b96-20241106):
+    dependencies:
+      '@babel/runtime': 7.26.0
+      react: 19.0.0-rc-66855b96-20241106
 
   react-hook-form@7.54.0(react@19.0.0-rc-66855b96-20241106):
     dependencies:
