@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { LoadingSpinner } from "./UXEnhancements";
 
@@ -34,7 +33,10 @@ export function ProGate({
   ctaText = "Upgrade to Pro"
 }: ProGateProps) {
   const { user, isLoaded, isSignedIn } = useUser();
-  const userData = isSignedIn ? useQuery(api.users.getUserById, { userId: user.id }) : null;
+  // Always call useQuery with a default value for userId when not signed in
+  const userData = useQuery(api.users.getUserById, { 
+    userId: isSignedIn ? user?.id : "" // Use empty string as fallback
+  });
 
   const containerClasses = cn(
     "min-h-screen bg-gradient-to-b from-gray-900 to-black text-white flex items-center justify-center",
@@ -49,7 +51,7 @@ export function ProGate({
       >
         <div className="flex flex-col items-center gap-4">
           <LoadingSpinner />
-          <span className="text-gray-400">{loadingMessage}</span>
+          <p className="text-gray-400">{loadingMessage}</p>
         </div>
       </motion.div>
     );
@@ -61,70 +63,40 @@ export function ProGate({
         className={containerClasses}
         {...fadeInUp}
       >
-        {fallback || (
-          <div className="text-center space-y-6 p-8 max-w-2xl">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-              Sign In Required
-            </h1>
-            <p className="text-gray-400 text-lg">
-              Please sign in to access this feature.
-            </p>
-            <SignInButton mode="modal">
-              <button className="inline-block px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors">
-                Sign In
-              </button>
-            </SignInButton>
-          </div>
-        )}
+        <div className="flex flex-col items-center gap-6 max-w-md text-center p-8">
+          <h2 className="text-2xl font-bold text-white">Sign in Required</h2>
+          <p className="text-gray-400">Please sign in to access this feature.</p>
+          <SignInButton mode="modal">
+            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Sign In
+            </button>
+          </SignInButton>
+        </div>
       </motion.div>
     );
   }
 
+  // Check for pro subscription
   if (!userData?.isPro) {
     return (
       <motion.div 
         className={containerClasses}
         {...fadeInUp}
       >
-        <div className="text-center space-y-6 p-8 max-w-2xl">
-          <motion.h1 
-            className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
+        <div className="flex flex-col items-center gap-6 max-w-md text-center p-8">
+          <h2 className="text-2xl font-bold text-white">Pro Feature</h2>
+          <p className="text-gray-400">{upgradeMessage}</p>
+          <Link
+            href="/pricing"
+            className="px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200"
           >
-            Pro Feature
-          </motion.h1>
-          <motion.p 
-            className="text-gray-400 text-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            {upgradeMessage}
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Link
-              href="/pricing"
-              className="inline-block px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
-            >
-              {ctaText}
-            </Link>
-          </motion.div>
+            {ctaText}
+          </Link>
+          {fallback}
         </div>
       </motion.div>
     );
   }
 
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div {...fadeInUp}>
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  );
+  return <>{children}</>;
 }

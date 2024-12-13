@@ -19,6 +19,7 @@ import type * as http from "../http.js";
 import type * as lemonSqueezy from "../lemonSqueezy.js";
 import type * as marketplace from "../marketplace.js";
 import type * as migrations from "../migrations.js";
+import type * as newsletter from "../newsletter.js";
 import type * as snippets from "../snippets.js";
 import type * as templateFavorites from "../templateFavorites.js";
 import type * as templates from "../templates.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   lemonSqueezy: typeof lemonSqueezy;
   marketplace: typeof marketplace;
   migrations: typeof migrations;
+  newsletter: typeof newsletter;
   snippets: typeof snippets;
   templateFavorites: typeof templateFavorites;
   templates: typeof templates;

@@ -73,10 +73,10 @@ export default function RootLayout({
           <ConvexClientProvider>
             <UXProvider>
               {children}
+              <Footer />
             </UXProvider>
           </ConvexClientProvider>
 
-          <Footer />
           <Toaster />
         </body>
       </html>

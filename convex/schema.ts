@@ -134,4 +134,10 @@ export default defineSchema({
     .index("by_user_id", ["userId"])
     .index("by_template_id", ["templateId"])
     .index("by_user_and_template", ["userId", "templateId"]),
+
+  newsletter_subscribers: defineTable({
+    email: v.string(),
+    subscribedAt: v.float64(), // timestamp
+    status: v.union(v.literal("active"), v.literal("unsubscribed")),
+  }).index("by_email", ["email"]),
 });

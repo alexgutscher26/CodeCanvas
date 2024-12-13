@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -15,12 +17,23 @@ interface Props {
   templateId: Id<"marketplaceTemplates">;
 }
 
+interface Comment {
+  _id: Id<"templateComments">;
+  userId: string;
+  userName: string;
+  content: string;
+  parentId?: Id<"templateComments">;
+  createdAt: number;
+  updatedAt: number;
+  isEdited: boolean;
+}
+
 export default function TemplateComments({ templateId }: Props) {
   const { isSignedIn } = useAuth();
   const [comment, setComment] = useState("");
-  const [editingComment, setEditingComment] = useState<string | null>(null);
+  const [editingComment, setEditingComment] = useState<Id<"templateComments"> | null>(null);
   const [editedContent, setEditedContent] = useState("");
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyingTo, setReplyingTo] = useState<Id<"templateComments"> | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -64,7 +77,7 @@ export default function TemplateComments({ templateId }: Props) {
     }
   };
 
-  const handleEditComment = async (commentId: string) => {
+  const handleEditComment = async (commentId: Id<"templateComments">) => {
     if (!editedContent.trim()) {
       toast.error("Please enter a comment");
       return;
@@ -86,7 +99,7 @@ export default function TemplateComments({ templateId }: Props) {
     }
   };
 
-  const handleDeleteComment = async (commentId: string) => {
+  const handleDeleteComment = async (commentId: Id<"templateComments">) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) {
       return;
     }
@@ -99,11 +112,11 @@ export default function TemplateComments({ templateId }: Props) {
     }
   };
 
-  const getCommentResponses = (parentId: string) => {
+  const getCommentResponses = (parentId: Id<"templateComments">) => {
     return comments.filter((c) => c.parentId === parentId);
   };
 
-  const CommentComponent = ({ comment, isReply = false }: { comment: any; isReply?: boolean }) => {
+  const CommentComponent = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => {
     const responses = getCommentResponses(comment._id);
     const isEditing = editingComment === comment._id;
 
