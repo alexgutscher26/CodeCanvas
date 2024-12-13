@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import NavigationHeader from "@/components/NavigationHeader";
 import { ProGate } from "@/components/ProGate";
 import { useState } from "react";
+import TemplateComments from "@/components/templates/TemplateComments";
+import TemplateRatings from "@/components/templates/TemplateRatings";
 
 export default function TemplateDetailPage() {
   const { templateId } = useParams();
@@ -206,6 +208,20 @@ export default function TemplateDetailPage() {
                     {template.code}
                   </SyntaxHighlighter>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Ratings & Comments */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-1">
+              <div className="bg-[#121218] border border-[#ffffff0a] rounded-2xl p-6 backdrop-blur-xl">
+                <TemplateRatings templateId={template._id} />
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <div className="bg-[#121218] border border-[#ffffff0a] rounded-2xl p-6 backdrop-blur-xl">
+                <TemplateComments templateId={template._id} />
               </div>
             </div>
           </div>

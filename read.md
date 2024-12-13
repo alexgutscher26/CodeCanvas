@@ -5,7 +5,6 @@
   - Cursor presence indicators
   - User avatars in the editor
   - Chat sidebar for collaborators -->
-
 - **Advanced Editing Features**
   <!-- - Undo/Redo history -->
   <!-- - Find and Replace functionality -->
@@ -114,30 +113,12 @@
   - Editor preferences
   - Notification settings
 
-### 11. Mobile Support 📱
 
-- **Mobile Features**
-  - Responsive mobile view
-  - Mobile app
-  - Offline support
-  - Touch-friendly interface
-
-Code Sharing and Collaboration:
-Add ability to share code snippets via unique URLs
 Implement real-time collaborative editing using WebSocket
-Add comments and discussion threads on code snippets
 Enhanced Editor Features:
 
 
-Add more template categories?
-Create additional template examples?
-Add a search functionality?
-Implement the template usage functionality?
-User Experience Features
 
-
-Search functionality with advanced filters
-User ratings and reviews for snippets
 Version control for templates
 Favorites and bookmarking system
 Snippet difficulty and complexity tagging

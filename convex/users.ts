@@ -55,6 +55,22 @@ export const getUserById = query({
   },
 });
 
+export const getAuthenticatedUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_user_id")
+      .filter((q) => q.eq(q.field("userId"), identity.subject))
+      .first();
+
+    return user;
+  },
+});
+
 export const upgradeToPro = mutation({
   args: {
     email: v.string(),

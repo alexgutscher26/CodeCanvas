@@ -92,6 +92,7 @@ export default defineSchema({
     updatedAt: v.float64(),
     isPro: v.optional(v.boolean()),
     price: v.optional(v.float64()), // Temporary field for migration
+    averageRating: v.optional(v.float64()),
   })
     .index("by_user_id", ["userId"])
     .index("by_language", ["language"])
@@ -99,4 +100,29 @@ export default defineSchema({
     .index("by_difficulty", ["difficulty"])
     .index("by_downloads", ["downloads"]),
 
+  templateRatings: defineTable({
+    templateId: v.id("marketplaceTemplates"),
+    userId: v.string(),
+    userName: v.string(),
+    rating: v.number(),
+    review: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_template_id", ["templateId"])
+    .index("by_user_and_template", ["userId", "templateId"]),
+
+  templateComments: defineTable({
+    templateId: v.id("marketplaceTemplates"),
+    userId: v.string(),
+    userName: v.string(),
+    content: v.string(),
+    parentId: v.optional(v.id("templateComments")), // For reply threads
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    isEdited: v.boolean(),
+  })
+    .index("by_template_id", ["templateId"])
+    .index("by_user_id", ["userId"])
+    .index("by_parent_id", ["parentId"]),
 });
