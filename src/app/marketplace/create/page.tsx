@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { toast } from "sonner";
-import { Editor } from "@monaco-editor/react";
+import { Editor, type Monaco } from "@monaco-editor/react";
 import { Code, FileCode, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import NavigationHeader from "@/components/NavigationHeader";
 import { z } from "zod";
+import { THEMES, defineMonacoThemes } from "../../(root)/_constants";
 
 const LANGUAGES = [
   "typescript",
@@ -88,6 +89,8 @@ export default function CreateTemplatePage() {
   const createTemplate = useMutation(api.marketplace.create);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof TemplateFormData, string>>>({});
+  const [selectedTheme, setSelectedTheme] = useState(THEMES[0].id);
+  const [editorMounted, setEditorMounted] = useState(false);
 
   const [formData, setFormData] = useState<TemplateFormData>({
     name: "",
@@ -98,6 +101,21 @@ export default function CreateTemplatePage() {
     difficulty: "BEGINNER",
     code: "",
   });
+
+  const handleEditorWillMount = (monaco: Monaco) => {
+    defineMonacoThemes(monaco);
+    monaco.editor.setTheme(selectedTheme);
+  };
+
+  const handleEditorDidMount = () => {
+    setEditorMounted(true);
+  };
+
+  useEffect(() => {
+    if (editorMounted) {
+      window.monaco?.editor.setTheme(selectedTheme);
+    }
+  }, [selectedTheme, editorMounted]);
 
   const validateForm = (): boolean => {
     try {
@@ -305,6 +323,24 @@ export default function CreateTemplatePage() {
                 </select>
               </div>
 
+              {/* Theme Select */}
+              <div className="relative group">
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <select
+                  value={selectedTheme}
+                  onChange={(e) => setSelectedTheme(e.target.value)}
+                  className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                    border border-[#313244] hover:border-[#414155] transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                >
+                  {THEMES.map((theme) => (
+                    <option key={theme.id} value={theme.id}>
+                      {theme.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* Code Editor */}
               <div className="relative">
                 <div className="flex items-center justify-between px-4 py-2 bg-[#1e1e2e] border-b border-[#313244] rounded-t-xl">
@@ -319,7 +355,14 @@ export default function CreateTemplatePage() {
                     defaultLanguage={formData.language}
                     value={formData.code}
                     onChange={(value) => setFormData({ ...formData, code: value || "" })}
-                    theme="vs-dark"
+                    theme={selectedTheme}
+                    beforeMount={handleEditorWillMount}
+                    onMount={handleEditorDidMount}
+                    loading={
+                      <div className="h-full w-full flex items-center justify-center bg-[#1e1e2e]">
+                        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                      </div>
+                    }
                     options={{
                       minimap: { enabled: false },
                       fontSize: 14,

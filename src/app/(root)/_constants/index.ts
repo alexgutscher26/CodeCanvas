@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Monaco } from "@monaco-editor/react";
 import { Theme } from "../../../types";
 
@@ -37,6 +38,7 @@ console.log('Even numbers:', evenNumbers);
 // Calculate sum using reduce
 const sum = numbers.reduce((acc, curr) => acc + curr, 0);
 console.log('Sum of numbers:', sum);`,
+    extension: undefined
   },
   typescript: {
     id: "typescript",
@@ -74,6 +76,7 @@ console.log('Original numbers:', math.numbers);
 console.log('Squared numbers:', math.squares());
 console.log('Even numbers:', math.evenNumbers());
 console.log('Sum of numbers:', math.sum());`,
+    extension: undefined
   },
   python: {
     id: "python",
@@ -96,6 +99,7 @@ print(f"Even numbers: {even_numbers}")
 # Calculate sum
 numbers_sum = sum(numbers)
 print(f"Sum of numbers: {numbers_sum}")`,
+    extension: undefined
   },
   java: {
     id: "java",
@@ -138,6 +142,7 @@ print(f"Sum of numbers: {numbers_sum}")`,
       System.out.println();
   }
 }`,
+    extension: undefined
   },
   go: {
     id: "go",
@@ -179,6 +184,7 @@ func main() {
   }
   fmt.Println("Sum of numbers:", sum)
 }`,
+    extension: undefined
   },
   rust: {
     id: "rust",
@@ -212,6 +218,7 @@ func main() {
     let sum: i32 = numbers.iter().sum();
     println!("Sum of numbers: {}", sum);
 }`,
+    extension: undefined
   },
   cpp: {
     id: "cpp",
@@ -259,6 +266,7 @@ int main() {
     
     return 0;
 }`,
+    extension: undefined
   },
   csharp: {
     id: "csharp",
@@ -291,6 +299,7 @@ class Program {
         Console.WriteLine($"Sum of numbers: {sum}");
     }
 }`,
+    extension: undefined
   },
   ruby: {
     id: "ruby",
@@ -315,6 +324,7 @@ puts "Even numbers: #{even_numbers.join(' ')}"
 # Calculate sum
 sum = numbers.sum
 puts "Sum of numbers: #{sum}"`,
+    extension: undefined
   },
   php: {
     id: "php",
@@ -344,6 +354,7 @@ echo "Even numbers: " . implode(", ", $evenNumbers) . "\n";
 // Calculate sum
 $sum = array_sum($numbers);
 echo "Sum of numbers: " . $sum . "\n";`,
+    extension: undefined
   },
   swift: {
     id: "swift",
@@ -368,6 +379,7 @@ print("Even numbers: \(evenNumbers)")
 // Calculate sum
 let sum = numbers.reduce(0, +)
 print("Sum of numbers: \(sum)")`,
+    extension: undefined
   },
   kotlin: {
     id: "kotlin",
@@ -394,6 +406,7 @@ print("Sum of numbers: \(sum)")`,
     val sum = numbers.sum()
     println("Sum of numbers: $sum")
 }`,
+    extension: undefined
   },
 };
 
@@ -403,9 +416,9 @@ updateLanguageVersions().catch(console.error);
 
 export const THEMES: Theme[] = [
   { id: 'vs-dark', label: 'VS Dark', color: '#1E1E1E' },
-  { id: 'github-dark', label: 'GitHub Dark', color: '#24292E' },
-  { id: 'monokai', label: 'Monokai', color: '#272822' },
-  { id: 'light', label: 'Light', color: '#FFFFFF' }
+  // { id: 'github-dark', label: 'GitHub Dark', color: '#24292E' },
+  // { id: 'github-light', label: 'GitHub Light', color: '#ffffff' },
+  // { id: 'monokai', label: 'Monokai', color: '#272822' }
 ];
 
 export const THEME_DEFINITIONS = {
@@ -415,60 +428,6 @@ export const THEME_DEFINITIONS = {
     rules: [],
     colors: {}
   },
-  'github-dark': {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [
-      { token: 'comment', foreground: '6A737D' },
-      { token: 'keyword', foreground: 'F97583' },
-      { token: 'string', foreground: '9ECBFF' },
-      { token: 'number', foreground: 'B392F0' },
-      { token: 'type', foreground: '79B8FF' }
-    ],
-    colors: {
-      'editor.background': '#24292E',
-      'editor.foreground': '#E1E4E8',
-      'editorLineNumber.foreground': '#6A737D',
-      'editor.selectionBackground': '#444D56',
-      'editor.inactiveSelectionBackground': '#373E47'
-    }
-  },
-  'monokai': {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [
-      { token: 'comment', foreground: '88846F' },
-      { token: 'keyword', foreground: 'F92672' },
-      { token: 'string', foreground: 'E6DB74' },
-      { token: 'number', foreground: 'AE81FF' },
-      { token: 'type', foreground: '66D9EF' }
-    ],
-    colors: {
-      'editor.background': '#272822',
-      'editor.foreground': '#F8F8F2',
-      'editorLineNumber.foreground': '#90908A',
-      'editor.selectionBackground': '#49483E',
-      'editor.inactiveSelectionBackground': '#3E3D32'
-    }
-  },
-  'light': {
-    base: 'vs',
-    inherit: true,
-    rules: [
-      { token: 'comment', foreground: '008000' },
-      { token: 'keyword', foreground: '0000FF' },
-      { token: 'string', foreground: 'A31515' },
-      { token: 'number', foreground: '098658' },
-      { token: 'type', foreground: '267F99' }
-    ],
-    colors: {
-      'editor.background': '#FFFFFF',
-      'editor.foreground': '#000000',
-      'editorLineNumber.foreground': '#237893',
-      'editor.selectionBackground': '#ADD6FF',
-      'editor.inactiveSelectionBackground': '#E5EBF1'
-    }
-  }
 };
 
 // Helper function to define themes in Monaco
@@ -482,5 +441,3 @@ export const defineMonacoThemes = (monaco: Monaco) => {
     });
   });
 };
-
-export default LANGUAGE_CONFIG;
