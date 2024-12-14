@@ -12,8 +12,62 @@ import { motion } from "framer-motion";
 import NavigationHeader from "@/components/NavigationHeader";
 import { z } from "zod";
 
-const LANGUAGES = ["typescript", "javascript", "python"] as const;
-const FRAMEWORKS = ["react", "nextjs", "vue"] as const;
+const LANGUAGES = [
+  "typescript",
+  "javascript",
+  "python",
+  "java",
+  "csharp",
+  "cpp",
+  "go",
+  "rust",
+  "swift",
+  "kotlin",
+  "ruby",
+  "php",
+  "dart",
+  "scala",
+  "r",
+  "sql",
+] as const;
+
+const FRAMEWORKS = [
+  "react",
+  "nextjs",
+  "vue",
+  "angular",
+  "svelte",
+  "express",
+  "nestjs",
+  "django",
+  "flask",
+  "fastapi",
+  "spring",
+  "dotnet",
+  "laravel",
+  "rails",
+  "flutter",
+  "electron",
+] as const;
+
+const CATEGORIES = [
+  "frontend",
+  "backend",
+  "fullstack",
+  "mobile",
+  "desktop",
+  "database",
+  "devops",
+  "testing",
+  "security",
+  "ai-ml",
+  "blockchain",
+  "iot",
+  "game-dev",
+  "web3",
+  "cloud",
+] as const;
+
 const DIFFICULTIES = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] as const;
 
 const templateSchema = z.object({
@@ -21,6 +75,7 @@ const templateSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters").max(500, "Description must be less than 500 characters"),
   language: z.enum(LANGUAGES),
   framework: z.enum(FRAMEWORKS),
+  category: z.enum(CATEGORIES),
   difficulty: z.enum(DIFFICULTIES),
   code: z.string().min(1, "Code template is required"),
 });
@@ -39,6 +94,7 @@ export default function CreateTemplatePage() {
     description: "",
     language: "typescript",
     framework: "react",
+    category: "frontend",
     difficulty: "BEGINNER",
     code: "",
   });
@@ -83,7 +139,6 @@ export default function CreateTemplatePage() {
       } as const;
 
       const templateId = await createTemplate(templateData);
-
       toast.success("Template created successfully!");
       router.push(`/marketplace/${templateId}`);
     } catch (error) {
@@ -167,8 +222,8 @@ export default function CreateTemplatePage() {
                 )}
               </div>
 
-              {/* Language and Framework Selects */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Language, Framework, and Category Selects */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="relative group">
                   <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                   <select
@@ -180,7 +235,9 @@ export default function CreateTemplatePage() {
                   >
                     {LANGUAGES.map((lang) => (
                       <option key={lang} value={lang}>
-                        {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                        {lang === "csharp" ? "C#" : 
+                         lang === "cpp" ? "C++" :
+                         lang.charAt(0).toUpperCase() + lang.slice(1)}
                       </option>
                     ))}
                   </select>
@@ -197,7 +254,33 @@ export default function CreateTemplatePage() {
                   >
                     {FRAMEWORKS.map((framework) => (
                       <option key={framework} value={framework}>
-                        {framework === "nextjs" ? "Next.js" : framework.charAt(0).toUpperCase() + framework.slice(1)}
+                        {framework === "nextjs" ? "Next.js" :
+                         framework === "nestjs" ? "NestJS" :
+                         framework === "dotnet" ? ".NET" :
+                         framework.charAt(0).toUpperCase() + framework.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="relative group">
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value as typeof CATEGORIES[number] })}
+                    className={`relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                      border ${errors.category ? 'border-red-500' : 'border-[#313244] hover:border-[#414155]'} transition-all duration-200
+                      focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                  >
+                    {CATEGORIES.map((category) => (
+                      <option key={category} value={category}>
+                        {category === "ai-ml" ? "AI/ML" :
+                         category === "iot" ? "IoT" :
+                         category === "game-dev" ? "Game Dev" :
+                         category === "web3" ? "Web3" :
+                         category.split('-').map(word => 
+                           word.charAt(0).toUpperCase() + word.slice(1)
+                         ).join(' ')}
                       </option>
                     ))}
                   </select>
