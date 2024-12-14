@@ -7,23 +7,32 @@ import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { toast } from "sonner";
 import { Editor } from "@monaco-editor/react";
-import { Code, FileCode, Sparkles } from "lucide-react";
+import { Code, FileCode, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import NavigationHeader from "@/components/NavigationHeader";
+import { z } from "zod";
 
-type TemplateFormData = {
-  name: string;
-  description: string;
-  language: string;
-  framework: string;
-  difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
-  code: string;
-};
+const LANGUAGES = ["typescript", "javascript", "python"] as const;
+const FRAMEWORKS = ["react", "nextjs", "vue"] as const;
+const DIFFICULTIES = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] as const;
+
+const templateSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters").max(50, "Name must be less than 50 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters").max(500, "Description must be less than 500 characters"),
+  language: z.enum(LANGUAGES),
+  framework: z.enum(FRAMEWORKS),
+  difficulty: z.enum(DIFFICULTIES),
+  code: z.string().min(1, "Code template is required"),
+});
+
+type TemplateFormData = z.infer<typeof templateSchema>;
 
 export default function CreateTemplatePage() {
   const router = useRouter();
   const { user, isSignedIn } = useUser();
   const createTemplate = useMutation(api.marketplace.create);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof TemplateFormData, string>>>({});
 
   const [formData, setFormData] = useState<TemplateFormData>({
     name: "",
@@ -34,6 +43,24 @@ export default function CreateTemplatePage() {
     code: "",
   });
 
+  const validateForm = (): boolean => {
+    try {
+      templateSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Partial<Record<keyof TemplateFormData, string>> = {};
+        error.errors.forEach((err) => {
+          const path = err.path[0] as keyof TemplateFormData;
+          newErrors[path] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSignedIn) {
@@ -41,19 +68,29 @@ export default function CreateTemplatePage() {
       return;
     }
 
+    if (!validateForm()) {
+      toast.error("Please fix the form errors before submitting");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const templateId = await createTemplate({
+      const templateData = {
         ...formData,
         userId: user.id,
         userName: user.fullName || user.username || "Anonymous",
         isPro: false,
-      });
+      } as const;
+
+      const templateId = await createTemplate(templateData);
 
       toast.success("Template created successfully!");
       router.push(`/marketplace/${templateId}`);
     } catch (error) {
       toast.error("Failed to create template");
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -102,11 +139,14 @@ export default function CreateTemplatePage() {
                   placeholder="Template Name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
-                    border border-[#313244] hover:border-[#414155] transition-all duration-200
-                    placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className={`relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                    border ${errors.name ? 'border-red-500' : 'border-[#313244] hover:border-[#414155]'} transition-all duration-200
+                    placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                   required
                 />
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+                )}
               </div>
 
               {/* Description Input */}
@@ -116,12 +156,15 @@ export default function CreateTemplatePage() {
                   placeholder="Description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
-                    border border-[#313244] hover:border-[#414155] transition-all duration-200
+                  className={`relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                    border ${errors.description ? 'border-red-500' : 'border-[#313244] hover:border-[#414155]'} transition-all duration-200
                     placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50
-                    min-h-[100px] resize-y"
+                    min-h-[100px] resize-y`}
                   required
                 />
+                {errors.description && (
+                  <p className="mt-1 text-sm text-red-500">{errors.description}</p>
+                )}
               </div>
 
               {/* Language and Framework Selects */}
@@ -130,14 +173,16 @@ export default function CreateTemplatePage() {
                   <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                   <select
                     value={formData.language}
-                    onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                    className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
-                      border border-[#313244] hover:border-[#414155] transition-all duration-200
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    onChange={(e) => setFormData({ ...formData, language: e.target.value as typeof LANGUAGES[number] })}
+                    className={`relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                      border ${errors.language ? 'border-red-500' : 'border-[#313244] hover:border-[#414155]'} transition-all duration-200
+                      focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                   >
-                    <option value="typescript">TypeScript</option>
-                    <option value="javascript">JavaScript</option>
-                    <option value="python">Python</option>
+                    {LANGUAGES.map((lang) => (
+                      <option key={lang} value={lang}>
+                        {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -145,14 +190,16 @@ export default function CreateTemplatePage() {
                   <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                   <select
                     value={formData.framework}
-                    onChange={(e) => setFormData({ ...formData, framework: e.target.value })}
-                    className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
-                      border border-[#313244] hover:border-[#414155] transition-all duration-200
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    onChange={(e) => setFormData({ ...formData, framework: e.target.value as typeof FRAMEWORKS[number] })}
+                    className={`relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                      border ${errors.framework ? 'border-red-500' : 'border-[#313244] hover:border-[#414155]'} transition-all duration-200
+                      focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                   >
-                    <option value="react">React</option>
-                    <option value="nextjs">Next.js</option>
-                    <option value="vue">Vue</option>
+                    {FRAMEWORKS.map((framework) => (
+                      <option key={framework} value={framework}>
+                        {framework === "nextjs" ? "Next.js" : framework.charAt(0).toUpperCase() + framework.slice(1)}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -162,15 +209,16 @@ export default function CreateTemplatePage() {
                 <div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                 <select
                   value={formData.difficulty}
-                  onChange={(e) => setFormData({ ...formData, difficulty: e.target.value as TemplateFormData["difficulty"] })}
-                  className="relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
-                    border border-[#313244] hover:border-[#414155] transition-all duration-200
-                    focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  onChange={(e) => setFormData({ ...formData, difficulty: e.target.value as typeof DIFFICULTIES[number] })}
+                  className={`relative z-10 w-full px-4 py-4 rounded-xl bg-[#1e1e2e]/80 hover:bg-[#1e1e2e] text-white
+                    border ${errors.difficulty ? 'border-red-500' : 'border-[#313244] hover:border-[#414155]'} transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                 >
-                  <option value="BEGINNER">Beginner</option>
-                  <option value="INTERMEDIATE">Intermediate</option>
-                  <option value="ADVANCED">Advanced</option>
-                  <option value="EXPERT">Expert</option>
+                  {DIFFICULTIES.map((difficulty) => (
+                    <option key={difficulty} value={difficulty}>
+                      {difficulty.charAt(0) + difficulty.slice(1).toLowerCase()}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -182,7 +230,7 @@ export default function CreateTemplatePage() {
                     <span className="text-sm">Code Template</span>
                   </div>
                 </div>
-                <div className="h-[400px] rounded-b-xl overflow-hidden border border-[#313244]">
+                <div className={`h-[400px] rounded-b-xl overflow-hidden border ${errors.code ? 'border-red-500' : 'border-[#313244]'}`}>
                   <Editor
                     height="100%"
                     defaultLanguage={formData.language}
@@ -200,19 +248,27 @@ export default function CreateTemplatePage() {
                     }}
                   />
                 </div>
+                {errors.code && (
+                  <p className="mt-1 text-sm text-red-500">{errors.code}</p>
+                )}
               </div>
             </div>
 
             <motion.button
               type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 px-6 rounded-xl
+              disabled={isSubmitting}
+              whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+              className={`w-full ${isSubmitting ? 'bg-blue-500/50' : 'bg-blue-500 hover:bg-blue-600'} text-white py-4 px-6 rounded-xl
                 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50
-                flex items-center justify-center gap-2 text-lg font-medium"
+                flex items-center justify-center gap-2 text-lg font-medium`}
             >
-              <Sparkles className="w-5 h-5" />
-              Create Template
+              {isSubmitting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Sparkles className="w-5 h-5" />
+              )}
+              {isSubmitting ? "Creating..." : "Create Template"}
             </motion.button>
           </form>
         </div>

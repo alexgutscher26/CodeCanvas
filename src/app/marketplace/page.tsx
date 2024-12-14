@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import MarketplaceHeader from "./components/MarketplaceHeader";
 import TemplateGrid from "./components/TemplateGrid";
 import { ProGate } from "../../components/ProGate";
